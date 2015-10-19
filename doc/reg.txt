@@ -1,0 +1,39 @@
+﻿HKEY_CURRENT_USER\Software\Imagination Technologies\PVRVFrame\STARTUP
+
+
+static void PVRFrameEnableControlWindow(bool bEnable)  
+{  
+    HKEY hKey = 0;  
+    // 打开注册表的 PVRFrame 项  
+    if(ERROR_SUCCESS != RegCreateKeyExW(HKEY_CURRENT_USER,  
+        L"Software\\Imagination Technologies\\PVRVFRame\\STARTUP\\",  
+        0,  
+        0,  
+        REG_OPTION_NON_VOLATILE,  
+        KEY_ALL_ACCESS,  
+        0,  
+        &hKey,  
+        NULL))  
+    {  
+        return;  
+    }  
+     
+    const wchar_t * wszValue = L"hide_gui";  
+    const wchar_t * wszNewData = (bEnable) ? L"NO" : L"YES";  
+    wchar_t wszOldData[256] = {0};  
+DWORD   dwSize = sizeof(wszOldData);  
+//读取相应的键值  
+LONGstatus = RegQueryValueExW(hKey, wszValue, 0, NULL, (LPBYTE)wszOldData, &dwSize);  
+//如果键值不存在，或者键值存在但与当前值不同，重设键值  
+    if (ERROR_FILE_NOT_FOUND == status                
+        || (ERROR_SUCCESS == status                   
+        && 0 != wcscmp(wszNewData, wszOldData)))      
+{  
+        dwSize = sizeof(wchar_t) * (wcslen(wszNewData) + 1);  
+        RegSetValueEx(hKey, wszValue, 0, REG_SZ, (const BYTE *)wszNewData, dwSize);  
+    }  
+//关闭注册表  
+    RegCloseKey(hKey);  
+}  
+
+
