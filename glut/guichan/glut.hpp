@@ -5,6 +5,8 @@
 #include "guichan/platform.hpp"
 
 
+#define TIMER_MILLIS ((int)(1000 / 60))
+
 #define Rmask 0x000000FF
 #define Gmask 0x0000FF00
 #define Bmask 0x00FF0000
@@ -25,15 +27,31 @@ static int val = 0;
 unsigned char * texture_data = NULL;
 int textureContainsData = 0;
 
-
 /*=============================*/
-
 
 SDLMOD_Surface* screen;
 
-
-
 /*=============================*/
+
+
+/*
+ ** see also:
+ **   http://blog.csdn.net/wuyong2k/article/details/7839973
+ **   http://www.cnblogs.com/jiaohuang/archive/2011/07/25/2116263.html
+ **   http://blog.sina.com.cn/s/blog_67612f950100svu5.html
+ **   http://blog.csdn.net/hitxiaya/article/details/5974811
+ */
+namespace glut
+{
+    bool running = true;
+
+    gcn::GLUTGraphics* graphics;
+    gcn::GLUTInput* input;
+    gcn::GLUTImageLoader* imageLoader;
+
+
+
+
 
 void display(void)
 {
@@ -62,14 +80,14 @@ void display(void)
 	
 	//glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, frame->w, frame->h, 0,
 	//			  texture_format, GL_UNSIGNED_BYTE, frame->pixels);
-		
+	
 	SDLMOD_LockSurface(screen);
 	//dumpBMPRaw("image1_out.bmp", screen->pixels, screen->w, screen->h);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
 		screen->w, screen->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
 		screen->pixels);
 	SDLMOD_UnlockSurface(screen);
-
+	
 	glScalef(1.0f, -1.0f, 1.0f);
 
 	glBegin(GL_QUADS);
@@ -82,6 +100,9 @@ void display(void)
 		glTexCoord2f(1.0f, 1.0f);
 		glVertex3f(1.0f, 1.0f, 0.0f);
 	glEnd();
+
+	//NOTE: avoid memory leak
+	glDeleteTextures(1, &g_TextureArray[g_ID]);
 
 	glutSwapBuffers();
 }
@@ -109,18 +130,82 @@ void reshape(int w, int h)
 
 void mouse(int button, int state, int mx, int my)
 {
+	int cw, ch, sw, sh;
+	cw = glutGet(GLUT_WINDOW_WIDTH);
+	ch = glutGet(GLUT_WINDOW_HEIGHT);
+	sw = screen->w;
+	sh = screen->h;
+	
+	int sx = (cw != 0) ? (int)((double)sw / (double)cw * (double)mx) : mx;
+	int sy = (ch != 0) ? (int)((double)sh / (double)ch * (double)my) : my;
+
+	glut::input->pushMouseInput(button, state, sx, sy);
 }
 
 void motion(int mx, int my)
 {
+	int cw, ch, sw, sh;
+	cw = glutGet(GLUT_WINDOW_WIDTH);
+	ch = glutGet(GLUT_WINDOW_HEIGHT);
+	sw = screen->w;
+	sh = screen->h;
+	
+	int sx = (cw != 0) ? (int)((double)sw / (double)cw * (double)mx) : mx;
+	int sy = (ch != 0) ? (int)((double)sh / (double)ch * (double)my) : my;
+
+	glut::input->pushMotionInput(sx, sy);
+}
+
+void passiveMotion(int mx, int my)
+{
+	glut::input->pushPassiveMotionInput(mx, my);
+}
+
+void keyboard(unsigned char key, int x, int y) 
+{ 
+	if (key == 27)
+	{
+		// ESC key
+		glutDestroyWindow(win);
+		exit(0);
+	} 
+	else 
+	{
+		glut::input->pushKeyDownInput(key);
+	}
+}
+ 
+void keyboardUp(unsigned char key, int x, int y) 
+{ 
+	glut::input->pushKeyUpInput(key);
+}
+ 
+void special(int key, int x, int y) 
+{
+	glut::input->pushSpecialDownInput(key);
+}
+
+void specialUp(int key, int x, int y) 
+{
+	glut::input->pushSpecialUpInput(key);
+}
+
+void timer(int value)
+{
+   glutPostRedisplay();
+   glutTimerFunc(TIMER_MILLIS, timer, 1);
 }
 
 void idle(void)
 {
+	//NOTE: 
+	//please use timer() instead of idle() if 
+	//not for memory leak detect
+	//glutPostRedisplay();
 }
 
-
-void menu(int value){
+void menu(int value)
+{
 	printf("menu %d\n", value);
 	if (value == 0) 
 	{
@@ -134,7 +219,8 @@ void menu(int value){
 	glutPostRedisplay();
 }
 
-void createMenu(void){
+void createMenu(void)
+{
 	animeringsmeny = glutCreateMenu(menu);
 	glutAddMenuEntry("menu 1", 1);
 	glutAddMenuEntry("menu 2", 2);
@@ -164,14 +250,6 @@ int initEnvironment(void)
 	return 1;
 }
 
-
-namespace glut
-{
-    bool running = true;
-
-    gcn::GLUTGraphics* graphics;
-    gcn::GLUTInput* input;
-    gcn::GLUTImageLoader* imageLoader;
 
     void init()
     {
@@ -231,49 +309,17 @@ namespace glut
 		glutReshapeFunc(reshape);
 		glutMouseFunc(mouse);
 		glutMotionFunc(motion);
+		glutPassiveMotionFunc(passiveMotion);
+		glutKeyboardFunc(keyboard);
+		glutKeyboardUpFunc(keyboardUp);
+		glutSpecialFunc(special);
+		glutSpecialUpFunc(specialUp);
+		glutTimerFunc(TIMER_MILLIS, timer, 1);
 		glutIdleFunc(idle);
 
 		if (initEnvironment())
 		{
 			glutMainLoop();
 		}
-
-
-
-
-
-
-#if 0
-        while(running)
-        {
-            SDL_Event event;
-            while(SDL_PollEvent(&event))
-            {
-                if (event.type == SDL_KEYDOWN)
-                {
-                    if (event.key.keysym.sym == SDLK_ESCAPE)
-                    {
-                        running = false;
-                    }
-                    if (event.key.keysym.sym == SDLK_f)
-                    {
-                        if (event.key.keysym.mod & KMOD_CTRL)
-                        {
-                            //SDL_WM_ToggleFullScreen(screen);
-                        }
-                    }
-                }
-                else if(event.type == SDL_QUIT)
-                {
-                    running = false;
-                }
-                input->pushInput(event);
-            }
-            globals::gui->logic();
-            globals::gui->draw();
-            //SDL_Flip(screen);
-        }
-#endif
-
     }
 }
