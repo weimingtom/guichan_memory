@@ -2,6 +2,7 @@
 Drawing guichan to memory, and then drawing it to any display system or game framework.
 
 ## History:  
+2015-11-14: Adding SDLMOD clip rect process, migrating to glut 3.7.6, fixing glut idle problem (CPU 100%).  
 2015-11-08: Fixing memory leak (see glTexImage2D), glut input porting is OK now (see glut.hpp).  
 2015-10-19: glut+sdlmod port, no input porting :).  
 
