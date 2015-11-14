@@ -8,6 +8,7 @@
 #define ABS(x) ((x)<0?-(x):(x))
 #endif
 
+//TODO: clip rect, SDLMOD_xxx draw rect overflow
 namespace gcn
 {
 
@@ -47,7 +48,7 @@ namespace gcn
         rect.w = carea.width;
         rect.h = carea.height;
 
-        //SDL_SetClipRect(mTarget, &rect);
+        SDLMOD_SetClipRect(mTarget, &rect);
 
         return result;
     }
@@ -68,7 +69,12 @@ namespace gcn
         rect.w = carea.width;
         rect.h = carea.height;
 
-        //SDL_SetClipRect(mTarget, &rect);
+        SDLMOD_SetClipRect(mTarget, &rect);
+#ifdef _DEBUG
+		//fprintf(stderr, 
+		//	"[GLUTGraphics::popClipArea]rect={x=%d, y=%d, w=%d, h=%d}\n", 
+		//	rect.x, rect.y, rect.w, rect.h);
+#endif
     }
 
     SDLMOD_Surface* GLUTGraphics::getTarget() const

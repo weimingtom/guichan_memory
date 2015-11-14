@@ -97,7 +97,7 @@ namespace gcn
         graphics->setColor(faceColor);
         graphics->fillRectangle(Rectangle(1, 1, getDimension().width-1, getHeight() - 1));
 #ifdef _DEBUG
-		fprintf(stderr, "[Button::draw] : x=%d, y=%d, w=%d, h=%d\n", 1, 1, getDimension().width-1, getHeight() - 1);
+		//fprintf(stderr, "[Button::draw] : x=%d, y=%d, w=%d, h=%d\n", 1, 1, getDimension().width-1, getHeight() - 1);
 #endif
         graphics->setColor(highlightColor);
         graphics->drawLine(0, 0, getWidth() - 1, 0);

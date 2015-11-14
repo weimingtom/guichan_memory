@@ -40,6 +40,7 @@ SDLMOD_Surface* screen;
  **   http://www.cnblogs.com/jiaohuang/archive/2011/07/25/2116263.html
  **   http://blog.sina.com.cn/s/blog_67612f950100svu5.html
  **   http://blog.csdn.net/hitxiaya/article/details/5974811
+ **   http://www.programmer-club.com.tw/ShowSameTitleN/opengl/2628.html
  */
 namespace glut
 {
@@ -105,6 +106,10 @@ void display(void)
 	glDeleteTextures(1, &g_TextureArray[g_ID]);
 
 	glutSwapBuffers();
+	
+#ifdef _DEBUG
+	//fprintf(stderr, "[display]%s\n", "glutSwapBuffers");
+#endif
 }
 
 void reshape(int w, int h)
@@ -196,6 +201,7 @@ void timer(int value)
    glutTimerFunc(TIMER_MILLIS, timer, 1);
 }
 
+//FIXME: I don't know why cpu is 100% if I use idle() :( 
 void idle(void)
 {
 	//NOTE: 
@@ -315,7 +321,9 @@ int initEnvironment(void)
 		glutSpecialFunc(special);
 		glutSpecialUpFunc(specialUp);
 		glutTimerFunc(TIMER_MILLIS, timer, 1);
-		glutIdleFunc(idle);
+
+		//FIXME: I don't know why cpu is 100% if I use idle() :( 
+		//glutIdleFunc(idle);
 
 		if (initEnvironment())
 		{

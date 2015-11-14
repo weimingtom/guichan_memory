@@ -59,6 +59,16 @@ void SDLMOD_ext_putPixel(SDLMOD_Surface* surface, int x, int y,
 	uint8_t *p;
 	uint32_t pixel;
 
+	if (x < surface->clip_rect.x || 
+		x > surface->clip_rect.x + surface->clip_rect.w ||
+		y < surface->clip_rect.y ||
+		y > surface->clip_rect.y + surface->clip_rect.h ||
+		surface->clip_rect.w == 0 ||
+		surface->clip_rect.h == 0)
+	{
+		return;
+	}
+
 	bpp = surface->format->BytesPerPixel;
 
     SDLMOD_LockSurface(surface);
@@ -128,6 +138,16 @@ void SDLMOD_ext_putPixelAlpha(SDLMOD_Surface* surface, int x, int y,
 	uint8_t *p;
 	uint32_t pixel;
 
+	if (x < surface->clip_rect.x || 
+		x > surface->clip_rect.x + surface->clip_rect.w ||
+		y < surface->clip_rect.y ||
+		y > surface->clip_rect.y + surface->clip_rect.h ||
+		surface->clip_rect.w == 0 ||
+		surface->clip_rect.h == 0)
+	{
+		return;
+	}
+
 	bpp = surface->format->BytesPerPixel;
 
     SDLMOD_LockSurface(surface);
@@ -183,6 +203,16 @@ void SDLMOD_ext_drawPoint(SDLMOD_Surface* mTarget,
 	uint8_t colorR, uint8_t colorG, uint8_t colorB, uint8_t colorA, 
 	int x, int y)
 {
+	if (x < mTarget->clip_rect.x || 
+		x > mTarget->clip_rect.x + mTarget->clip_rect.w ||
+		y < mTarget->clip_rect.y ||
+		y > mTarget->clip_rect.y + mTarget->clip_rect.h ||
+		mTarget->clip_rect.w == 0 ||
+		mTarget->clip_rect.h == 0)
+	{
+		return;
+	}
+
     if (colorA != 255)
     {
         SDLMOD_ext_putPixelAlpha(mTarget, x, y, colorR, colorG, colorB, colorA);
@@ -242,6 +272,37 @@ void SDLMOD_ext_drawHLine(SDLMOD_Surface* mTarget,
     int bpp;
 	uint8_t *p;
 	uint32_t pixel;
+
+	//prevent overflow
+	if (y < mTarget->clip_rect.y ||
+		y > mTarget->clip_rect.y + mTarget->clip_rect.h ||
+		mTarget->clip_rect.w == 0 ||
+		mTarget->clip_rect.h == 0)
+	{
+		return;
+	}
+	if (x1 < x2)
+	{
+		if (x1 < mTarget->clip_rect.x)
+		{
+			x1 = mTarget->clip_rect.x;
+		}
+		if (x2 > mTarget->clip_rect.x + mTarget->clip_rect.w)
+		{
+			x2 = mTarget->clip_rect.x + mTarget->clip_rect.w;
+		}
+	}
+	else
+	{
+		if (x2 < mTarget->clip_rect.x)
+		{
+			x2 = mTarget->clip_rect.x;
+		}
+		if (x1 > mTarget->clip_rect.x + mTarget->clip_rect.w)
+		{
+			x1 = mTarget->clip_rect.x + mTarget->clip_rect.w;
+		}
+	}
 
 	bpp = mTarget->format->BytesPerPixel;
 
@@ -325,6 +386,37 @@ void SDLMOD_ext_drawVLine(SDLMOD_Surface* mTarget,
     int bpp;
 	uint8_t *p;
 	uint32_t pixel;
+
+	//prevent overflow
+	if (x < mTarget->clip_rect.x ||
+		x > mTarget->clip_rect.x + mTarget->clip_rect.w ||
+		mTarget->clip_rect.w == 0 ||
+		mTarget->clip_rect.h == 0)
+	{
+		return;
+	}
+	if (y1 < y2)
+	{
+		if (y1 < mTarget->clip_rect.y)
+		{
+			y1 = mTarget->clip_rect.y;
+		}
+		if (y2 > mTarget->clip_rect.y + mTarget->clip_rect.h)
+		{
+			y2 = mTarget->clip_rect.y + mTarget->clip_rect.h;
+		}
+	}
+	else
+	{
+		if (y2 < mTarget->clip_rect.y)
+		{
+			y2 = mTarget->clip_rect.y;
+		}
+		if (y1 > mTarget->clip_rect.y + mTarget->clip_rect.h)
+		{
+			y1 = mTarget->clip_rect.y + mTarget->clip_rect.h;
+		}
+	}
 
 	bpp = mTarget->format->BytesPerPixel;
 
