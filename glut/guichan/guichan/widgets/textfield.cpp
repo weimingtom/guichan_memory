@@ -95,7 +95,7 @@ namespace gcn
 
         graphics->setColor(getForegroundColor());
         graphics->drawLine(x, clipArea.height - 2, x, 1);
-    }
+	}
 
     void TextField::mousePressed(MouseEvent& mouseEvent)
     {

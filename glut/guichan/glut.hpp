@@ -133,6 +133,7 @@ void reshape(int w, int h)
 	glLoadIdentity();
 }
 
+//on mouse button down and up
 void mouse(int button, int state, int mx, int my)
 {
 	int cw, ch, sw, sh;
@@ -144,9 +145,27 @@ void mouse(int button, int state, int mx, int my)
 	int sx = (cw != 0) ? (int)((double)sw / (double)cw * (double)mx) : mx;
 	int sy = (ch != 0) ? (int)((double)sh / (double)ch * (double)my) : my;
 
+	if (sx < 0)
+	{
+		sx = 0;
+	}
+	if (sx > sw)
+	{
+		sx = sw;
+	}
+	if (sy < 0)
+	{
+		sy = 0;
+	}
+	if (sy > sh)
+	{
+		sy = sh;
+	}
+
 	glut::input->pushMouseInput(button, state, sx, sy);
 }
 
+//on mouse drag
 void motion(int mx, int my)
 {
 	int cw, ch, sw, sh;
@@ -158,12 +177,56 @@ void motion(int mx, int my)
 	int sx = (cw != 0) ? (int)((double)sw / (double)cw * (double)mx) : mx;
 	int sy = (ch != 0) ? (int)((double)sh / (double)ch * (double)my) : my;
 
+	if (sx < 0)
+	{
+		sx = 0;
+	}
+	if (sx > sw)
+	{
+		sx = sw;
+	}
+	if (sy < 0)
+	{
+		sy = 0;
+	}
+	if (sy > sh)
+	{
+		sy = sh;
+	}
+
 	glut::input->pushMotionInput(sx, sy);
 }
 
+//on mouse move (not drag)
 void passiveMotion(int mx, int my)
 {
-	glut::input->pushPassiveMotionInput(mx, my);
+	int cw, ch, sw, sh;
+	cw = glutGet(GLUT_WINDOW_WIDTH);
+	ch = glutGet(GLUT_WINDOW_HEIGHT);
+	sw = screen->w;
+	sh = screen->h;
+
+	int sx = (cw != 0) ? (int)((double)sw / (double)cw * (double)mx) : mx;
+	int sy = (ch != 0) ? (int)((double)sh / (double)ch * (double)my) : my;
+
+	if (sx < 0)
+	{
+		sx = 0;
+	}
+	if (sx > sw)
+	{
+		sx = sw;
+	}
+	if (sy < 0)
+	{
+		sy = 0;
+	}
+	if (sy > sh)
+	{
+		sy = sh;
+	}
+
+	glut::input->pushPassiveMotionInput(sx, sy);
 }
 
 void keyboard(unsigned char key, int x, int y) 

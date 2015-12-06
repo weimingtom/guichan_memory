@@ -303,27 +303,21 @@ void SDLMOD_ext_drawHLine(SDLMOD_Surface* mTarget,
 	{
 		return;
 	}
-	if (x1 < x2)
+	if (x1 > x2)
 	{
-		if (x1 < mTarget->clip_rect.x)
-		{
-			x1 = mTarget->clip_rect.x;
-		}
-		if (x2 > mTarget->clip_rect.x + mTarget->clip_rect.w)
-		{
-			x2 = mTarget->clip_rect.x + mTarget->clip_rect.w;
-		}
+		int temp;
+		temp = x1;
+		x1 = x2;
+		x2 = x1;
 	}
-	else
+	// x1 <= x2
+	if (x1 < mTarget->clip_rect.x)
 	{
-		if (x2 < mTarget->clip_rect.x)
-		{
-			x2 = mTarget->clip_rect.x;
-		}
-		if (x1 > mTarget->clip_rect.x + mTarget->clip_rect.w)
-		{
-			x1 = mTarget->clip_rect.x + mTarget->clip_rect.w;
-		}
+		x1 = mTarget->clip_rect.x;
+	}
+	if (x2 > mTarget->clip_rect.x + mTarget->clip_rect.w)
+	{
+		x2 = mTarget->clip_rect.x + mTarget->clip_rect.w;
 	}
 
 	bpp = mTarget->format->BytesPerPixel;
@@ -417,27 +411,21 @@ void SDLMOD_ext_drawVLine(SDLMOD_Surface* mTarget,
 	{
 		return;
 	}
-	if (y1 < y2)
+	if (y1 > y2)
 	{
-		if (y1 < mTarget->clip_rect.y)
-		{
-			y1 = mTarget->clip_rect.y;
-		}
-		if (y2 > mTarget->clip_rect.y + mTarget->clip_rect.h)
-		{
-			y2 = mTarget->clip_rect.y + mTarget->clip_rect.h;
-		}
+		int temp;
+		temp = y1;
+		y1 = y2;
+		y2 = temp;
 	}
-	else
+	// y1 <= y2
+	if (y1 < mTarget->clip_rect.y)
 	{
-		if (y2 < mTarget->clip_rect.y)
-		{
-			y2 = mTarget->clip_rect.y;
-		}
-		if (y1 > mTarget->clip_rect.y + mTarget->clip_rect.h)
-		{
-			y1 = mTarget->clip_rect.y + mTarget->clip_rect.h;
-		}
+		y1 = mTarget->clip_rect.y;
+	}
+	if (y2 > mTarget->clip_rect.y + mTarget->clip_rect.h)
+	{
+		y2 = mTarget->clip_rect.y + mTarget->clip_rect.h;
 	}
 
 	bpp = mTarget->format->BytesPerPixel;
