@@ -18,5 +18,8 @@ http://libsdl.org/
 https://www.opengl.org/resources/libraries/glut/  
 https://www.opengl.org/resources/libraries/glut/glut_downloads.php  
 
+* GLUT 3.7.6  
+http://www.ece.lsu.edu/xinli/OpenGL/GLUTSetup.htm  
+
 * POSIX Threads for Win32   
 https://www.sourceware.org/pthreads-win32/  
